@@ -86,4 +86,60 @@ fun FlipIcon(
     }
 }
 
+@Composable
+fun BottomNavItem(
+    modifier: Modifier = Modifier,
+    screen: Screen,
+    isSelected: Boolean
+) {
+    val animateHeight by animateDpAsState(targetValue = if (isSelected) 36.dp else 26.dp)
+    val animatedElevation by animateDpAsState(targetValue = if (isSelected) 15.dp else 0.dp)
+    val animatedAlpha by animateFloatAsState(targetValue = if (isSelected) 1f else .5f)
+    val animatedIconSize by animateDpAsState(
+        targetValue = if (isSelected) 1.dp else 0.5.dp,
+        animationSpec = spring(
+            stiffness = Spring.StiffnessLow,
+            dampingRatio = Spring.DampingRatioMediumBouncy
+        )
+    )
 
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Center
+    ) {
+        Row(
+            modifier = Modifier
+                .height(animateHeight)
+                .shadow(
+                    elevation = animatedElevation,
+                    shape = RoundedCornerShape(20.dp)
+                )
+                .background(
+                    color = MaterialTheme.colors.surface,
+                    shape = RoundedCornerShape(20.dp)
+                ),
+            verticalAlignment = CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            FlipIcon(
+                isActive = isSelected,
+                activeIcon = screen.activeIcon,
+                inactiveIcon = screen.inActiveIcon,
+                contentDescription = "Icons",
+                modifier = Modifier
+                    .align(CenterVertically)
+                    .fillMaxHeight()
+                    .padding(start = 11.dp)
+                    .alpha(animatedAlpha)
+                    .size(animatedIconSize)
+            )
+            AnimatedVisibility(visible = isSelected) {
+                Text(
+                    text = screen.title,
+                    modifier = Modifier.padding(start = 8.dp, end = 10.dp),
+                    maxLines = 1
+                )
+            }
+        }
+    }
+}
