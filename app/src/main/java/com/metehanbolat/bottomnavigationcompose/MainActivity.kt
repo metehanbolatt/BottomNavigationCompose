@@ -50,7 +50,14 @@ class MainActivity : ComponentActivity() {
                         },
                         content = { },
                         bottomBar = {
-
+                            BottomNavigationAnimation(
+                                screens = listOf(
+                                    Screen.Home,
+                                    Screen.Create,
+                                    Screen.Profile,
+                                    Screen.Settings,
+                                )
+                            )
                         }
                     )
                 }
@@ -59,6 +66,46 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun BottomNavigationAnimation(
+    screens: List<Screen>
+) {
+    var selectedScreen by remember { mutableStateOf(0) }
+    Box(
+        modifier = Modifier
+            .shadow(5.dp)
+            .background(color = MaterialTheme.colors.surface)
+            .height(64.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = CenterVertically
+        ) {
+            for (screen in screens) {
+                val isSelected = screen == screens[selectedScreen]
+                val animatedWeight by animateFloatAsState(targetValue = if (isSelected) 1.5f else 1f)
+                Box(
+                    modifier = Modifier.weight(animatedWeight),
+                    contentAlignment = Center
+                ) {
+                    val interactionSource = remember { MutableInteractionSource() }
+                    BottomNavItem(
+                        screen = screen,
+                        isSelected = isSelected,
+                        modifier = Modifier.clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
+                            selectedScreen = screens.indexOf(screen)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun FlipIcon(
